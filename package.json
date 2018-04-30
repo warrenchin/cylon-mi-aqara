@@ -1,7 +1,7 @@
 {
   "name": "cylon-mi-aqara",
   "description": "Xiaomi Aqara adapter for Cylon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "warrenchin/cylon-mi-aqara",
   "license": "MIT",
   "keywords": [
@@ -15,8 +15,7 @@
     "cylonjs",
     "iot"
   ],
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "chai": "3.0.0",
     "mocha": "^2.2.5",
