@@ -4,61 +4,66 @@ Cylon.js (http://cylonjs.com) is a JavaScript framework for robotics, physical c
 
 This repository contains the Cylon adaptor for Xiaomi Aqara platform (https://www.mi.com/special/smart/), supports Gateway and a handful of zigbee based accessories.
 
-## How to Use
+### Related Modules
+Initially the plan is to have one module handling all mi-based device. However later I noticed the WiFi based devices using unofficial protocol are very different.
+
+I decided to do it in separate modules:
+
+adapter   | description                    | repo
+----------|--------------------------------|-----------------------------------------------
+mi-aqara  | Gateway & Zigbee based devices | https://github.com/warrenchin/cylon-mi-aqara
+mi-binary | WiFi based devices             | https://github.com/warrenchin/cylon-mi-binary
+
+## How to Install
 
 ```
 npm install cylon cylon-mi-aqara
 ```
-
+## How to Use
+// todo
 ## Sample
 
 ```javascript
 const Cylon = require("cylon");
 
 Cylon.robot({
-	name: "caprica6",
+  name: "caprica6",
 
-	connections: {
-		aqara: { adaptor: 'mi-aqara' }
-	},
+  connections: {
+    aqara: { adaptor: 'mi-aqara' }
+  },
 
-	devices: {
-		gateway: { driver: 'gateway', sid: '286c07fa354f', password: '????????????????' },
+  devices: {
+    gateway: { driver: 'mi-aqara.gateway', sid: '286c07fa354f', password: '????????????????' },
 
-		btn1: { driver: 'switch', sid: '158d0001a5e2f9' },
-		btn_doorbell: { driver: 'switch', sid: '158d0000f524b7' },
-		btn_study_fan: { driver: 'switch', sid: '158d00016c08f5' },
+    btn1: { driver: 'mi-aqara.switch', sid: '158d0001a5e2f9' },
+    btn_doorbell: { driver: 'mi-aqara.switch', sid: '158d0000f524b7' },
+    btn_study_fan: { driver: 'mi-aqara.switch', sid: '158d00016c08f5' },
+    sw_living: { driver: 'mi-aqara.switch', sid: '158d00012ef74a', channel_0: 'left', channel_1: 'right' },
+    sensor_ht_living: { driver: 'mi-aqara.sensor_ht', sid: '158d0000f4370c' },
+    sensor_ht_storage: { driver: 'mi-aqara.sensor_ht', sid: '158d0000f43717' },
+    motion_gf_washroom: { driver: 'mi-aqara.motion', sid: '158d0000f085ee' },
+    motion_stair_lower: { driver: 'mi-aqara.motion', sid: '158d0001209e4c' },
+    magnet_entrance_door: { driver: 'mi-aqara.magnet', sid: '158d0000d619b5' },
+    outlet_study_fan: { driver: 'mi-aqara.plug', sid: '158d0000f85465' },
+    wallswitch_kitchen: { driver: 'mi-aqara.wallswitch', sid: '158d0001f469fa', channel_0: 'kitchen_light', channel_1: 'wet_kitchen_light' },
+    waterleak_kitchen: { driver: 'mi-aqara.waterleak', sid: '158d0001d779c6' }
+  },
 
-		sw_living: { driver: 'switch', sid: '158d00012ef74a', channel_0: 'left', channel_1: 'right' },
+  work: function(my) {
+    my.btn_study_fan.on('click', () => my.outlet_study_fan.toggle());
+    my.btn_study_fan.on('long_click_press', () => my.outlet_study_fan.power(false));
+    my.btn1.on('long_click_press', () => my.wallswitch_kitchen.power('kitchen_light', false));
 
-		sensor_ht_living: { driver: 'sensor_ht', sid: '158d0000f4370c' },
-		sensor_ht_storage: { driver: 'sensor_ht', sid: '158d0000f43717' },
-
-		motion_gf_washroom: { driver: 'motion', sid: '158d0000f085ee' },
-		motion_stair_lower: { driver: 'motion', sid: '158d0001209e4c' },
-
-		magnet_entrance_door: { driver: 'magnet', sid: '158d0000d619b5' },
-
-		outlet_study_fan: { driver: 'plug', sid: '158d0000f85465' },
-
-		wallswitch_kitchen: { driver: 'wallswitch', sid: '158d0001f469fa', channel_0: 'kitchen_light', channel_1: 'wet_kitchen_light' },
-
-		waterleak_kitchen: { driver: 'waterleak', sid: '158d0001d779c6' }
-	},
-
-	work: function(my) {
-		my.btn_study_fan.on('click', () => my.outlet_study_fan.toggle());
-		my.btn_study_fan.on('long_click_press', () => my.outlet_study_fan.power(false));
-
-		my.btn1.on('long_click_press', () => my.wallswitch_kitchen.power('kitchen_light', false));
-
-		my.gateway.on('illumination', (value) => {
-			console.log('illumination changed from %d to %d', value.old, value.new);
-		});
-	}
+    my.gateway.on('illumination', (value) => {
+      console.log('illumination changed from %d to %d', value.old, value.new);
+    });
+  }
 }).start();
 ```
 ## Events
+The events in { old: "old value", new: "current value" } format are available in the prop staza, eg:
+```console.log(sensor_ht_living.prop.temperature);```
 
 ```
 commons
