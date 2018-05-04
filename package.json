@@ -15,7 +15,9 @@
     "cylonjs",
     "iot"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "mocha"
+  },
   "devDependencies": {
     "chai": "3.0.0",
     "mocha": "^2.2.5",
